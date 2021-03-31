@@ -1,0 +1,7 @@
+packer validate packer-test.json
+packer build packer-test.json 2>&1 | tee output.txt
+tail -2 output.txt | head -2 | awk 'match($0, /ami-.*/) { print substr($0, RSTART, RLENGTH) }' > ami.txt
+AMIID=$(cat ami.txt)
+echo "imagename = \"$AMIID\"" >> terraform-vars.tfvars
+terraform init
+terraform plan --var-file terraform-vars.tfvars

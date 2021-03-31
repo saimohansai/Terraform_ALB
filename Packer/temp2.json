@@ -1,0 +1,43 @@
+{
+    "_comment" : "Create a AWS AMI ith AMZ Linux 2018 with Java and Tomcat",
+    "variables": {
+      
+    },
+    
+
+    "builders": [{
+      "associate_public_ip_address": "true",
+      "ami_virtualization_type": "hvm",
+      "type": "amazon-ebs",
+      "region": "us-east-1",
+      "source_ami": "ami-013f17f36f8b1fefb",
+      "instance_type": "t2.micro",
+      "ssh_keypair_name": "Terraform",
+      "ssh_private_key_file": "./Terraform.pem",
+      "ssh_username": "ubuntu",
+      "ami_name": "DevOpsClass-Build-{{isotime | clean_resource_name}}",
+      "vpc_id": "vpc-07e43049bd4852835",
+      "subnet_id": "subnet-0e1dd85c2e65d9858",
+      "tags": {
+        "Name": "DevOpsClass-Build-{{isotime | clean_resource_name}}"
+      }
+    }],
+    "provisioners": [{
+      "type": "shell",
+      "inline": [
+        "sudo add-apt-repository ppa:awstools-dev/awstools",
+        "sleep 30",
+        "sudo apt-get update",
+        "sudo apt-get install -y apache2",
+        "sudo git clone https://github.com/saimohansai/webhook-index.git",
+        "sudo rm -rf /var/www/html/index.html",
+        "cd webhook-index/",
+        "sudo cp index.html /var/www/html/index.html",
+        "sudo cp style.css /var/www/html/style.css",
+        "sudo cp scorekeeper.js /var/www/html/scorekeeper.js",
+        "sudo systemctl start apache2",
+        "sudo systemctl status apache2"
+
+        ]
+    }]
+  }
